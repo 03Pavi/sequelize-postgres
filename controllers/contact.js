@@ -25,7 +25,7 @@ const get_contact = async (req, res) => {
       include: [
         {
           model: db.user,
-          as:"user_details",
+          as:"users",
           attributes: {
             exclude:["id","created_at","updated_at"]
           }

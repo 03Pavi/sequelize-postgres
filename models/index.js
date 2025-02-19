@@ -17,8 +17,15 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 db.user = require("./user")(sequelize, DataTypes, Model);
 db.contact = require("./contact")(sequelize, DataTypes, Model);
+db.subject = require("./subject")(sequelize, DataTypes, Model);
 
-db.user.hasMany(db.contact, { foreignKey: "user_id", as:"contact" });
-db.contact.belongsTo(db.user,{ foreignKey: "user_id", as:"user_details" });
-db.sequelize.sync();
+db.user.hasMany(db.contact, { foreignKey: "user_id", as: "contact" });
+db.contact.belongsTo(db.user, { foreignKey: "user_id", as: "user_details" });
+
+db.user.belongsToMany(db.subject, { through: "user_subject", as: "subjects" });
+db.subject.belongsToMany(db.user, { through: "user_subject", as: "users" });
+
+db.sequelize.sync().then(() => {
+  console.log("yes re-sync done!");
+});
 module.exports = db;
