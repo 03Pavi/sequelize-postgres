@@ -46,7 +46,7 @@ const get_subjects = async (req, res) => {
       include: [
         {
           model: db.user,
-          as:"users",
+          as: "users",
           attributes: {
             exclude: ["created_at", "updated_at"],
           },
@@ -72,7 +72,7 @@ const get_subject = async (req, res) => {
       include: [
         {
           model: db.user,
-          as:"users",
+          as: "users",
           attributes: {
             exclude: ["created_at", "updated_at"],
           },
@@ -91,4 +91,19 @@ const get_subject = async (req, res) => {
   }
 };
 
-module.exports = { assign_subject, add_subject, get_subjects, get_subject };
+const delete_subject = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await Subject.destroy({
+      where: { id },
+    });
+    res.status(200).json({ msg: "Subject deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal server error" });
+  }
+};
+
+module.exports = { assign_subject, add_subject, get_subjects, delete_subject,get_subject };
