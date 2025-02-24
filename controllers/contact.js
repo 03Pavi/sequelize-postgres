@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const db = require("../models");
 const e = require("express");
 const Contact = db.contact;
+
 const add_contact = async (req, res) => {
   try {
     const user_id = req.params.user_id;
@@ -19,20 +20,20 @@ const add_contact = async (req, res) => {
       .json({ message: "Internal server error" });
   }
 };
+
 const get_contact = async (req, res) => {
   try {
     const data = await Contact.findAll({
       include: [
         {
           model: db.user,
-          as:"users",
+          as: "users",
           attributes: {
-            exclude:["id","created_at","updated_at"]
-          }
+            exclude: ["id", "created_at", "updated_at"],
+          },
         },
       ],
     });
-
     res.status(200).json(data);
   } catch (error) {
     console.log(error);
@@ -41,4 +42,5 @@ const get_contact = async (req, res) => {
       .json({ message: "Internal server error" });
   }
 };
-module.exports = { add_contact,get_contact };
+
+module.exports = { add_contact, get_contact };

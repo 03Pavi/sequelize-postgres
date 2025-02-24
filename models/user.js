@@ -10,9 +10,9 @@ module.exports = (sequelize, DataTypes, Model) => {
         unique: true,
         allowNull: false,
         validate: {
-            //sequelize level no need to drop table before execute
+          //sequelize level no need to drop table before execute
           isAlpha: {
-            msg:"Name should contain only alphabets"
+            msg: "Name should contain only alphabets",
           },
         },
         get() {
@@ -34,6 +34,8 @@ module.exports = (sequelize, DataTypes, Model) => {
       },
     },
     {
+      paranoid: true,
+      deletedAt: "deleted_at",
       createdAt: "created_at",
       updatedAt: "updated_at",
     }

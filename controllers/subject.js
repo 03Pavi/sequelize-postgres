@@ -106,4 +106,5 @@ const delete_subject = async (req, res) => {
   }
 };
 
+
 module.exports = { assign_subject, add_subject, get_subjects, delete_subject,get_subject };
