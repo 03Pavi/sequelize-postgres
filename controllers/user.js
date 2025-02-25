@@ -1,9 +1,58 @@
-const { Sequelize } = require("sequelize");
+const { Sequelize, where } = require("sequelize");
 const db = require("../models");
 const User = db.user;
 const Contact = db.contact;
 const Subject = db.subject;
 const { StatusCodes } = require("http-status-codes");
+
+const scope = async (req, res) => {
+  User.addScope("isDeleted", {
+    paranoid: false,
+    where: {
+      deleted_at: {
+        [Sequelize.Op.ne]: null,
+      },
+    },
+  });
+
+  User.addScope("includeContact", {
+    include: {
+      model: Contact,
+      as: "contacts",
+      attributes: ["permanent_address", "current_address"],
+    },
+  });
+
+  const data = await User.scope(["isDeleted", "includeContact"]).findAll();
+  res.send({ message: "scope", data });
+};
+
+const transaction = async (req, res) => {
+  let dbTransaction = await db.sequelize.transaction();
+  try {
+    const user = await db.testUser.create(
+      {
+        name: "pavitar",
+        email: "pavitar@gmail.com",
+      },
+      { transaction: dbTransaction }
+    );
+
+    const userTest = await db.test.create(
+      {
+        userId: user.id,
+        code: "englishTest",
+      },
+      { transaction: dbTransaction }
+    );
+
+    await dbTransaction.commit();
+    res.json({ message: "user created", data: userTest });
+  } catch (err) {
+    await dbTransaction.rollback();
+    res.json({ message: "some error" });
+  }
+};
 
 const add_user = async (req, res) => {
   try {
@@ -291,7 +340,7 @@ const lazy_loading_contacts = async (req, res) => {
   }
 };
 
-const creating_associations=async(req,res)=>{ }
+const creating_associations = async (req, res) => {};
 
 module.exports = {
   add_user,
@@ -304,5 +353,7 @@ module.exports = {
   eager_loading_contacts,
   lazy_loading_contacts,
   advance_eager_loading_contacts,
-  creating_associations
+  creating_associations,
+  scope,
+  transaction,
 };
